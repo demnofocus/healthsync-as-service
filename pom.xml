@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.meditrack</groupId>
-	<artifactId>meditrack-as-service</artifactId>
+	<artifactId>healthsync-as-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>meditrack-as-service</name>
+	<name>healthsync-as-service</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
