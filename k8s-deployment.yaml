@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthsync-as-deployment
+  labels:
+    app: healthsync-as-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: healthsync-as-service
+  template:
+    metadata:
+      labels:
+        app: healthsync-as-service
+    spec:
+      containers:
+        - name: healthsync-as-container
+          image: your-dockerhub-username/healthsync-as-service:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://<DB_HOST>:3306/<DB_NAME>"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthsync-as-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: healthsync-as-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8081
